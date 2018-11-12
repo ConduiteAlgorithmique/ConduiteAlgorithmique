@@ -23,7 +23,6 @@ public:
     vector<ofxSoundPlayerObject> players;
     vector<string> playerFileIndexes;
 
-    ofxSoundOutput output;
     ofSoundStream stream;
     int current_index;
     int last_index;

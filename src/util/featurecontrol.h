@@ -185,6 +185,7 @@ private:
     void updateLights();
     void blinkOn();
     void blinkOff();
+    void updateDurationLight();
 
     float lastLightUpdateTime;
     bool lightsUpdated;
@@ -252,8 +253,6 @@ private:
     int videoMaxIndex;
     int speedSetting;
     float videoLength;
-
-
     int idle_active_state;
 
 

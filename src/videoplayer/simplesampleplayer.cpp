@@ -4,7 +4,6 @@
 SimpleSamplePlayer::SimpleSamplePlayer()
 {
     stream.listDevices();
-
     stream.setDeviceID( Settings::getInt("audio_device_id")); //Is computer-specific
     int num_channels = 2;
     int bufferlength = 1024;

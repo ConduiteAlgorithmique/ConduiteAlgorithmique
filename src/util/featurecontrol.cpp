@@ -12,7 +12,6 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
     this->coms = coms;
     this->fge = guiElements;
     this->pcr = pcr;
-//    this->fKNN = new FeatureKNN(dbl);
     this->fSearch = new FeatureSearch(dbl);
     Settings::get().load("settings.json");
     idleTimeout =  Settings::getInt("idle_timeout"); //seconds
@@ -25,7 +24,6 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
 
     idle_activity_min_duration = Settings::getFloat("idle_activity_min_duration"); //seconds
     idle_activity_max_duration = Settings::getFloat("idle_activity_max_duration"); //seconds
-
 
     state = IDLE;
     int num_features =21;
@@ -54,6 +52,7 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
     blinkTimer =0;
     setSpeed(0);
     toIdle();
+    updateDurationLight();
 
 }
 
@@ -250,6 +249,7 @@ void FeatureControl::toIdleActive(){
     videos =  dbl->getVideoPairsFromIndexes(videoIndexes);
     videoMaxIndex = videos.size();
     (*fge)[1]->setValue(32);
+    updateDurationLight();
 }
 
 void FeatureControl::toHumanActive(){
@@ -272,10 +272,12 @@ void FeatureControl::getNewVideos(bool play){
     videoIndexes = fSearch->getSearchResultsDistance(32,true, numVideosInRange);
 
     if (state ==IDLE || state ==IDLE_ACTIVE){
+
         videoMaxIndex = CLAMP(videoIndexes.size(), 1, 32);
     }
 
     (*fge)[1]->setValue(videoMaxIndex);
+    updateDurationLight();
 
     videos = dbl->getVideoPairsFromIndexes(videoIndexes);
 
@@ -453,6 +455,7 @@ void FeatureControl::setSearchRadius(int value){
      t =  CLAMP(t, 1, 32);
      videoMaxIndex =t;
      (*fge)[1]->setValue(videoMaxIndex);
+     updateDurationLight();
  }
 
 void FeatureControl::incrementSpeed(int step){
@@ -505,6 +508,12 @@ void FeatureControl::updateLights(){
     else{
         lightsUpdated =false;
     }
+}
+
+void FeatureControl::updateDurationLight(){
+    float v = 32. -CLAMP(videoMaxIndex, 1, 32);
+    coms->sendLightControl(2, v/32. *4095);
+
 }
 
 

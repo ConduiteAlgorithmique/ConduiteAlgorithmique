@@ -14,7 +14,6 @@ HapPlayerManager::HapPlayerManager(deque<PlayingInfo> *pq, ofMutex *pm,  VideoDa
     call_time = ofGetElapsedTimeMillis();
 
     DEV_MODE = Settings::getBool("dev_mode");
-    OVERLAY = Settings::getBool("overlay");
     videoPath = Settings::getString("video_path");
     int num_videos = -1;
 

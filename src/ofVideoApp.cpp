@@ -288,7 +288,3 @@ void ofVideoApp::window_focus_callback(GLFWwindow* window, int focused)
         // The window lost input focus
     }
 }
-//void ofVideoApp::audioOut(ofSoundBuffer & buffer){
-
-//  videoManager->audioOut(buffer);
-//}
