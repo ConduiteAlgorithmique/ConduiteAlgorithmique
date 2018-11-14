@@ -36,6 +36,10 @@ void ofVideoApp::setup(){
 
 }
 
+void ofVideoApp::setInterfacePointer(shared_ptr<ofApp> app){
+    videoManager->getSamplePlayer()->fader.setInterfacePointer(app);
+}
+
 //--------------------------------------------------------------
 void ofVideoApp::update(){
     uint64_t mainUpdateTime = ofGetElapsedTimeMillis();

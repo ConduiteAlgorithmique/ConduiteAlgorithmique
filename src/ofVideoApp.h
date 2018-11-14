@@ -4,7 +4,7 @@
 #include "ofxOsc.h"
 #include "videoplayer/happlayermanager.h"
 #include "videoplayer/videodatabaseloader.h"
-
+#include "ofApp.h"
 
 class ofVideoApp : public ofBaseApp{
 
@@ -25,13 +25,16 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     static void window_focus_callback(GLFWwindow* window, int focused);
+    void setInterfacePointer(shared_ptr<ofApp> app);
+
+
 
 private:
     ofxOscReceiver receiver;
     ofxOscSender sender;
     HapPlayerManager* videoManager;
     VideoDatabaseLoader dbl;
-
+    ofApp *guiApp;
     ofFbo fbo;
 
     std::string		msg_strings[20];

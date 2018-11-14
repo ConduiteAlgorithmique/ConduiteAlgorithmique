@@ -18,7 +18,7 @@ void ofApp::setup(){
     DEV_MODE = Settings::getBool("dev_mode");
 
     font.load("futura.ttf", 12);
-    initAudio();
+//    initAudio();
     initNames();
     //    ofSetLogLevel(OF_LOG_ERROR);
     ofSetLogLevel(OF_LOG_NOTICE);
@@ -163,12 +163,13 @@ void ofApp::initAudio(){
     std::vector<ofSoundDevice> devices = soundStream.getDeviceList();
     ofSoundStreamSettings s;
     int device_id = Settings::getInt("audio_device_id");
-    soundStream.setDeviceID(device_id);
+//    soundStream.setDeviceID(device_id);
 //    s.numBuffers=4;
 //    s.sampleRate=44100;
 //    s.bufferSize=IN_AUDIO_BUFFER_LENGTH;
 //    soundStream.setup(s);
     soundStream.setup(this, 0, 2, 44100, IN_AUDIO_BUFFER_LENGTH, 4);
+    ofLogError(ofToString(ofGetElapsedTimef(),3)) << "Interface audio init"<<endl;
 }
 
 void ofApp::setLayout(){
@@ -542,7 +543,7 @@ bool ofApp::vectorsAreEqual(vector<string>v1, vector<string> v2){
     return true;
 }
 
-void ofApp::audioIn(ofSoundBuffer & buffer){
+void ofApp::receiveBuffer(ofSoundBuffer & buffer){
     waveform.receiveBuffer(buffer);
 }
 

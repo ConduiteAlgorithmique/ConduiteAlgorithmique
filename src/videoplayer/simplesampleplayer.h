@@ -26,8 +26,6 @@ public:
     ofSoundStream stream;
     int current_index;
     int last_index;
-
-
 };
 
 #endif // SIMPLESAMPLEPLAYER_H

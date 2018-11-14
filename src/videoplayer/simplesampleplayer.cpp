@@ -9,8 +9,8 @@ SimpleSamplePlayer::SimpleSamplePlayer()
     int bufferlength = 1024;
     stream.setup(num_channels  , 0, 48000, bufferlength, 1);
     stream.setOutput(fader);
+    ofLogError(ofToString(ofGetElapsedTimef(),3)) << "Sample player audio init"<<endl;
     fader.create_fades(bufferlength,num_channels);
-
     current_index =0;
 }
 
@@ -56,3 +56,5 @@ void SimpleSamplePlayer::playFile(string sample_name, int start_frame){
 void SimpleSamplePlayer::loop(int index){
     players[index].setPosition(0);
 }
+
+
