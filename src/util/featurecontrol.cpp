@@ -78,15 +78,16 @@ void FeatureControl::update(){
     case HUMAN_ACTIVE:
         //Todo
         updateFeatureWeights(true);
+        if (weightsChanged()){
+            getNewVideos(false);
+            updateLights();
+        }
         break;
 
     case IDLE:
         updateFeatureWeights(true);
         if (weightsChanged()){
             getNewVideos(false);
-            updateLights();
-        }
-        if (!lightsUpdated){
             updateLights();
         }
         break;
