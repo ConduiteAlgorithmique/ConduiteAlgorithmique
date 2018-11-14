@@ -302,7 +302,6 @@ void FeatureControl::playVideo(){
     videoStartTime = ofGetElapsedTimef();
     coms->publishVideoNow( playingVideo.first, true);
     updateFeatureValues(dbl->getFeaturesFromindex(playingVideo.second));
-    updateLights();
     blinkOn();
 
     pcr->updateLine(playingVideo.second);
@@ -494,26 +493,28 @@ void FeatureControl::setSpeed(int value){
 
 
 void FeatureControl::updateLights(){
-    if (currentTime - lastLightUpdateTime > 0.05){
+//    if (currentTime - lastLightUpdateTime > 0.05){
         for (int index = 0 ; index < featureValues.size(); index ++){
-            int lightValue = 0;
-//            lightValue += 4095*0.25 * featureValues[index];
-            lightValue += 4095*0.75 * featureActive[index];
-            coms->sendLightControl(index +3, lightValue);
+            if (weightChanged(index)){
+                int lightValue = 0;
+        //            lightValue += 4095*0.25 * featureValues[index];
+                    lightValue += 4095*0.75 * featureActive[index];
+                    coms->sendLightControl(index +3, lightValue);
+            }
         }
+//        }
 
         lastLightUpdateTime = currentTime;
         lightsUpdated =true;
-    }
-    else{
-        lightsUpdated =false;
-    }
+//    }
+//    else{
+//        lightsUpdated =false;
+//    }
 }
 
 void FeatureControl::updateDurationLight(){
     float v = 32. -CLAMP(videoMaxIndex, 1, 32);
     coms->sendLightControl(2, v/32. *4095);
-
 }
 
 
