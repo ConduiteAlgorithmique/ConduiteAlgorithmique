@@ -34,7 +34,7 @@ int main( ){
     shared_ptr<ofAppBaseWindow> videoWindow = ofCreateWindow(videoSettings);
     shared_ptr<ofVideoApp> videoApp (new ofVideoApp());
     auto t =std::dynamic_pointer_cast<ofAppBaseGLWindow> (videoWindow);
-    glfwSetWindowFocusCallback( std::dynamic_pointer_cast<ofAppGLFWWindow> (t)->getGLFWWindow(), videoApp->window_focus_callback );
+//    glfwSetWindowFocusCallback( std::dynamic_pointer_cast<ofAppGLFWWindow> (t)->getGLFWWindow(), videoApp->window_focus_callback );
     ofRunApp(videoWindow, videoApp);
     videoApp->setInterfacePointer(interfaceApp);
 

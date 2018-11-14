@@ -3,7 +3,7 @@
         "frames_path":"/home/nuc/Documents/dataStore/IMAGE/frames_480",
         "segnet_path":"/home/nuc/Documents/dataStore/IMAGE/segnet",
         "video_path": "/home/nuc/Documents/dataStore/VIDEO/hap/",
-        "audio_path": "/home/nuc/Documents/dataStore/AUDIO/full_audio/",
+        "audio_path": "/home/nuc/Documents/dataStore/AUDIO/",
 
 
 
