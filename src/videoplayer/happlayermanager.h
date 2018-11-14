@@ -6,6 +6,7 @@
 #include "ofxHapPlayer.h"
 #include "simplesampleplayer.h"
 #include "videodatabaseloader.h"
+#include "ofApp.h"
 class HapPlayerManager:public ofThread{
 
 public:
@@ -42,6 +43,10 @@ public:
 
     int playingVideoIndex;
     int lastVideoIndex;
+
+    SimpleSamplePlayer * getSamplePlayer(){
+        return &samplePlayer;
+    }
 
 private:
     /* Fades */
