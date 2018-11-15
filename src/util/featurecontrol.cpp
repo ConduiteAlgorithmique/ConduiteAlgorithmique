@@ -79,7 +79,6 @@ void FeatureControl::update(){
         //Todo
         updateFeatureWeights(true);
         if (weightsChanged()){
-            getNewVideos(false);
             updateLights();
         }
         break;
@@ -499,7 +498,7 @@ void FeatureControl::updateLights(){
             if (weightChanged(index)){
                 int lightValue = 0;
         //            lightValue += 4095*0.25 * featureValues[index];
-                    lightValue += 4095*0.75 * featureActive[index];
+                    lightValue += 4095*0.75 * featureWeights[index];
                     coms->sendLightControl(index +3, lightValue);
             }
         }

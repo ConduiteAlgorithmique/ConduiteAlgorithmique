@@ -167,7 +167,6 @@ public:
     void toIdleActive();
     void toHumanActive();
 
-
     static const int NUM_SPEEDS = 16;
     const string SPEEDSTRINGS [17]= {"Max", "4", "3", "2", "1.5", "1", "2/3", "1/2","1/3","1/4","1/6", "1/8", "1/10", "1/12", "1/16", "1/24", "1/32"};
     const float SPEEDS [17]=        {-1,     4.,   3., 2., 1.5,   1., 2./3.,  0.5,  1./3., 1./4., 1./6., 1./8., 1./10., 1./12, 1./16, 1./24., 1./32.};
