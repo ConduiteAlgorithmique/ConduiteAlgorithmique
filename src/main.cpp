@@ -18,11 +18,7 @@ int main( ){
     interfaceSettings.monitor =Settings::getInt("interface_monitor_index");
     interfaceSettings.windowMode = Settings::getBool("windowed") ? OF_WINDOW :OF_FULLSCREEN;
 
-    // REALLY IMPORTANT to create the window and app before creating the second window,
-    // otherwise the shaders don't work
-    shared_ptr<ofAppBaseWindow> interfaceWindow = ofCreateWindow(interfaceSettings);
-    shared_ptr<ofApp> interfaceApp (new ofApp());
-    ofRunApp(interfaceWindow, interfaceApp);
+
 
     //Then run video player
     ofGLFWWindowSettings videoSettings;
@@ -34,12 +30,16 @@ int main( ){
     shared_ptr<ofAppBaseWindow> videoWindow = ofCreateWindow(videoSettings);
     shared_ptr<ofVideoApp> videoApp (new ofVideoApp());
     auto t =std::dynamic_pointer_cast<ofAppBaseGLWindow> (videoWindow);
-//    glfwSetWindowFocusCallback( std::dynamic_pointer_cast<ofAppGLFWWindow> (t)->getGLFWWindow(), videoApp->window_focus_callback );
+
+    // REALLY IMPORTANT to create the window and app before creating the second window,
+    // otherwise the shaders don't work
+    shared_ptr<ofAppBaseWindow> interfaceWindow = ofCreateWindow(interfaceSettings);
+    shared_ptr<ofApp> interfaceApp (new ofApp());
     ofRunApp(videoWindow, videoApp);
-    videoApp->setInterfacePointer(interfaceApp);
+    ofRunApp(interfaceWindow, interfaceApp);
 
 
-
-
+//    glfwSetWindowFocusCallback( std::dynamic_pointer_cast<ofAppGLFWWindow> (t)->getGLFWWindow(), videoApp->window_focus_callback );
+//    videoApp->setWaveformPointer(interfaceApp->getWaveform());
     ofRunMainLoop();
 }

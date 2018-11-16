@@ -52,6 +52,8 @@ Project{
             "src/videoplayer/simplesampleplayer.h",
             "src/videoplayer/happlayermanager.cpp",
             "src/videoplayer/happlayermanager.h",
+            "src/videoplayer/ofxTwoChannelFader.cpp",
+            "src/videoplayer/ofxTwoChannelFader.h",
             "src/main.cpp",
             "src/ofApp.cpp",
             "src/ofApp.h",

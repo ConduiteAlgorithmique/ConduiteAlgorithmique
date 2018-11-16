@@ -25,9 +25,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     static void window_focus_callback(GLFWwindow* window, int focused);
-    void setInterfacePointer(shared_ptr<ofApp> app);
-
-
 
 private:
     ofxOscReceiver receiver;
@@ -77,8 +74,4 @@ private:
     void sendPlayingFile();
     void setSpeed(int speedIndex);
     int SPEEDS [19]= {-1, 4000, 3000, 2000, 1500, 1000,900,800,700,600, 500,400, 300, 250, 200, 150, 100, 66, 33};
-
-
-
-
 };

@@ -27,12 +27,10 @@ void AudioWaveform::receiveBuffer(ofSoundBuffer& buffer){
 
     int lastChunkStart = INTERNAL_BUFFER_LENGTH -IN_AUDIO_BUFFER_LENGTH ;
     std::lock_guard<std::mutex> lock(bufferMutex);
-    buffer.getChannel(leftBuffer,0 );
     buffer.getChannel(rightBuffer,1 );
     //leftBuffer.addTo(rightBuffer);
     std::copy(soundBuffer.begin()+IN_AUDIO_BUFFER_LENGTH, soundBuffer.end(), soundBuffer.begin());
     std::copy(std::begin(rightBuffer.getBuffer()),std::end(rightBuffer.getBuffer()), std::begin(soundBuffer)+lastChunkStart);
-
 }
 
 
@@ -124,6 +122,21 @@ void AudioWaveform::draw(){
 
 void AudioWaveform::update(){
     copyBuffer();
+    float bufferMax = 0;
+    for (auto v: drawBuffer){
+        bufferMax = max(v, bufferMax);
+    }
+
+    runningBufferMax = runningBufferMax*0.99 + bufferMax*0.01;
+    if (bufferMax >runningBufferMax){
+        runningBufferMax = bufferMax;
+    }
+    runningBufferMax = max(runningBufferMax, 0.05f);
+
+    for (int  i= 0; i< drawBuffer.size(); i++){
+        drawBuffer[i]/=(runningBufferMax*2);
+    }
+
     fft->setSignal(&drawBuffer[0]);
 
     float* curFft = fft->getAmplitude();
@@ -135,15 +148,19 @@ void AudioWaveform::update(){
             maxValue = abs(audioBins[i]);
         }
     }
-//    if max
 
-//    maxValue = max(maxValue, 0.05f);
     runningMax = runningMax*0.99 + maxValue*0.01;
-    runningMax = CLAMP(runningMax , 0.001, 1.);
+
+    if (maxValue >runningMax){
+        runningMax = maxValue;
+    }
+    runningMax = CLAMP(runningMax , 0.01, 1.);
     for(int i = 0; i < fft->getBinSize(); i++) {
         audioBins[i] /= runningMax;
     }
     spectrogram.update(audioBins);
+//    ofLogError()<<"Buffer max :" << bufferMax << "\n Running buffer max" << runningBufferMax <<endl;
+//    ofLogError()<<"Bins max :" << maxValue << "\n Running bins max" << runningMax <<endl;
 }
 
 

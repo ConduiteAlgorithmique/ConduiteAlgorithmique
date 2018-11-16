@@ -18,7 +18,7 @@ void ofApp::setup(){
     DEV_MODE = Settings::getBool("dev_mode");
 
     font.load("futura.ttf", 12);
-//    initAudio();
+    initAudio();
     initNames();
     //    ofSetLogLevel(OF_LOG_ERROR);
     ofSetLogLevel(OF_LOG_NOTICE);
@@ -95,14 +95,13 @@ void ofApp::setup(){
 //    FXAAshader.load("fxaa.vert","fxaa.frag");
 
     fc =new FeatureControl(&databaseLoader, &coms, &featureGuiElements, &pointCloudRender);
-
 }
 
 void ofApp::initNames(){
     featureNamesEn.push_back("Loudness");
     featureNamesEn.push_back("Pitch");
     featureNamesEn.push_back("Percussiveness");
-    featureNamesEn.push_back("Bandwidth");
+    featureNamesEn.push_back("Spectral Bandwidth");
     featureNamesEn.push_back("Vehicle speed");
     featureNamesEn.push_back("Instability");
     featureNamesEn.push_back("Engine RPM");
@@ -115,7 +114,7 @@ void ofApp::initNames(){
     featureNamesEn.push_back("Pavement");
     featureNamesEn.push_back("Road");
     featureNamesEn.push_back("Sky");
-    featureNamesEn.push_back("Vegetation");
+    featureNamesEn.push_back("Trees");
     featureNamesEn.push_back("Vehicle");
     featureNamesEn.push_back("Signage");
     featureNamesEn.push_back("Fence/Pole");
@@ -142,18 +141,21 @@ void ofApp::initNames(){
     featureNamesFr.push_back("Signalisation");
     featureNamesFr.push_back("Clôture/Poteau");
     featureNamesFr.push_back("Piéton/Vélo");
-
+    durationNameEn= "Duration";
+    neighbourNameEn= "Quantity";
+    durationNameFr= "Durée";
+    neighbourNameFr = "Quantité";
     languageIsEnglish = Settings::getBool("english");
     if (languageIsEnglish) {
-        durationName= "Duration";
-        neighbourName= "Neigbours";
         featureNames = featureNamesEn;
+        durationName = durationNameEn;
+        neighbourName = neighbourNameEn;
     }
 
     else {
-        durationName= "Durée";
-        neighbourName = "Voisins";
         featureNames = featureNamesFr;
+        durationName = durationNameFr;
+        neighbourName = neighbourNameFr;
     }
 }
 
@@ -181,13 +183,9 @@ void ofApp::setLayout(){
     int leftWidth = int(floor(div*windowWidth));
     int rightWidth = windowWidth -int(floor(div*windowWidth));
 
-
-
-
     //Place knobs
     float knobWidth = windowWidth/float(numKnobs);
     int offset = knobWidth;
-
 
     int remainder = windowWidth - knobWidth*23;
     imageManager.setLayout(leftWidth -1, 0, rightWidth , 3*windowHeight/4);
@@ -288,8 +286,6 @@ void ofApp::update(){
     featureGuiElements[1]->update(); //Update search radius
 
     fc->updateFeatureElements();
-
-
 }
 
 //--------------------------------------------------------------
@@ -377,13 +373,19 @@ void ofApp::drawColors(){
 
 void ofApp::toggleLanguage(){
     languageIsEnglish = !languageIsEnglish;
-    if (languageIsEnglish){
+    if (languageIsEnglish) {
         featureNames = featureNamesEn;
+        durationName = durationNameEn;
+        neighbourName = neighbourNameEn;
     }
-    else featureNames = featureNamesFr;
+
+    else {
+        featureNames = featureNamesFr;
+        durationName = durationNameFr;
+        neighbourName = neighbourNameFr;
+    }
     setLayout();
 }
-
 void ofApp::playRandomVideo(){
     fc->playRandomVideo();
 }
@@ -543,8 +545,18 @@ bool ofApp::vectorsAreEqual(vector<string>v1, vector<string> v2){
     return true;
 }
 
+void ofApp::audioIn(ofSoundBuffer & buffer){
+    waveform.receiveBuffer(buffer);
+}
+
 void ofApp::receiveBuffer(ofSoundBuffer & buffer){
     waveform.receiveBuffer(buffer);
+}
+
+void ofApp::logFilename(){
+    filenameLog.open("filenames.txt",  ofFile::Append);
+    filenameLog << fc->getPlayingVideo().first +"\n";
+    filenameLog.close();
 }
 
 //--------------------------------------------------------------
@@ -558,6 +570,9 @@ void ofApp::keyPressed(int key){
     }
     if (key =='a'){
         fc->toIdleActive();
+    }
+    if (key ==' '){
+        logFilename();
     }
 }
 //--------------------------------------------------------------

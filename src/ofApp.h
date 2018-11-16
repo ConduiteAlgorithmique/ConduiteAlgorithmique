@@ -57,8 +57,13 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    void receiveBuffer(ofSoundBuffer & buffer);
+    void audioIn(ofSoundBuffer &b);
 
+    void logFilename();
+    void receiveBuffer(ofSoundBuffer & buffer);
+    AudioWaveform * getWaveform(){
+        return &waveform;
+    }
 
     //GUI elements
     ImageManager imageManager;
@@ -91,6 +96,9 @@ public:
     vector<string> featureNamesFr;
     vector<string> featureNames;
     string durationName, neighbourName;
+    string durationNameFr, neighbourNameFr;
+    string durationNameEn, neighbourNameEn;
+
 
     bool audioToggle;
     bool speedChanged = false;
@@ -108,6 +116,9 @@ public:
 
     ofFbo drawFBO;
     ofFbo drawFBO2;
+
+    ofFile filenameLog;
+
 //    ofShader FXAAshader;
 
 

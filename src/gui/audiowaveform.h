@@ -44,6 +44,8 @@ private:
    ofxFft* fft;
    vector<float> drawBins, middleBins, audioBins;
 
+   float runningBufferMax;
+
    float runningMax;
 
    int spectrogramOffset;

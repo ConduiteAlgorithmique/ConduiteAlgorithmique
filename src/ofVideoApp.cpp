@@ -1,7 +1,7 @@
 #include "ofVideoApp.h"
 #include "ofxJsonSettings.h"
 
-bool ofVideoApp::FOCUSED = false;
+bool ofVideoApp::FOCUSED = true;
 
 //--------------------------------------------------------------
 void ofVideoApp::setup(){
@@ -24,7 +24,7 @@ void ofVideoApp::setup(){
     focus_warning_string  ="CLICK HERE FOR\nVIDEO TO WORK WELL";
     focus_warning_string_fr  ="CLIQUEZ ICI POUR\n VIDEOS FONCTIONNELS";
 
-    FOCUSED = false;
+    FOCUSED = true;
     font.load("futura.ttf", 35);
 
     debugTimer = 1.;
@@ -36,9 +36,7 @@ void ofVideoApp::setup(){
 
 }
 
-void ofVideoApp::setInterfacePointer(shared_ptr<ofApp> app){
-    videoManager->getSamplePlayer()->fader.setInterfacePointer(app);
-}
+
 
 //--------------------------------------------------------------
 void ofVideoApp::update(){

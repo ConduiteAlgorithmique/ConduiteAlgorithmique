@@ -22,8 +22,8 @@ HapPlayerManager::HapPlayerManager(deque<PlayingInfo> *pq, ofMutex *pm,  VideoDa
          num_videos = Settings::getInt("n_dev_videos");;
     }
 
-    loadVideoPaths(dbl->getVideoPaths(), num_videos);
     samplePlayer.init(dbl->getAudioPaths(), num_videos);
+    loadVideoPaths(dbl->getVideoPaths(), num_videos);
 
     playNow(dbl->getVideoPaths()[0]);
 }

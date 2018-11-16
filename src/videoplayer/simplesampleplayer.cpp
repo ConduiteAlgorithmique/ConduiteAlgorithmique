@@ -7,7 +7,7 @@ SimpleSamplePlayer::SimpleSamplePlayer()
     stream.setDeviceID( Settings::getInt("audio_device_id")); //Is computer-specific
     int num_channels = 2;
     int bufferlength = 1024;
-    stream.setup(num_channels  , 0, 48000, bufferlength, 1);
+    stream.setup(num_channels  , 0, 48000, bufferlength, 2);
     stream.setOutput(fader);
     ofLogError(ofToString(ofGetElapsedTimef(),3)) << "Sample player audio init"<<endl;
     fader.create_fades(bufferlength,num_channels);
@@ -23,7 +23,9 @@ void SimpleSamplePlayer::init(vector<string> audioFilePaths, int num_files = -1)
     playerFileIndexes.resize(num_files);
 
     for (int i = 0; i<num_files;i++){
+
         string path = audioFilePaths[i];
+        ofLogNotice() << "Opening audio file " << (i+1)<<"/" <<num_files<<" - " <<path<<endl;
         players[i].load(path);
 //      players[i].setMultiPlay(true);
         players[i].setPosition(0.);
