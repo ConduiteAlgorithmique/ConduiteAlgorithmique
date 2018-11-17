@@ -124,22 +124,9 @@ public:
         return featureActive[index];
     }
 
-    bool weightChanged(int index){
-        if (lastFeatureWeights[index]!= featureWeights[index]){
-            return true;
-        }
-        return false;
-    }
+    bool weightChanged(int index);
 
-    bool weightsChanged(){
-        for (int i=0; i <featureWeights.size();i++){
-            if (lastFeatureWeights[i]!= featureWeights[i]){
-                return true;
-            }
-        }
-        return false;
-    }
-
+    bool weightsChanged();
     int numFeatures(){
         return featureValues.size();
     }

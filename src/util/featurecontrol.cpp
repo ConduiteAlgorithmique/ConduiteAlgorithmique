@@ -78,16 +78,12 @@ void FeatureControl::update(){
     case HUMAN_ACTIVE:
         //Todo
         updateFeatureWeights(true);
-        if (weightsChanged()){
-            updateLights();
-        }
         break;
 
     case IDLE:
         updateFeatureWeights(true);
         if (weightsChanged()){
             getNewVideos(false);
-            updateLights();
         }
         break;
 
@@ -116,6 +112,9 @@ void FeatureControl::update(){
             }
         }
         break;
+    }
+    if (weightsChanged()){
+        updateLights();
     }
     input_activity_flag = false;
     lastFeatureWeights =featureWeights;
@@ -493,23 +492,15 @@ void FeatureControl::setSpeed(int value){
 
 
 void FeatureControl::updateLights(){
-//    if (currentTime - lastLightUpdateTime > 0.05){
         for (int index = 0 ; index < featureValues.size(); index ++){
             if (weightChanged(index)){
-                int lightValue = 0;
-        //            lightValue += 4095*0.25 * featureValues[index];
-                    lightValue += 4095*0.75 * featureWeights[index];
-                    coms->sendLightControl(index +3, lightValue);
+                int lightValue = 4095*0.75 * featureWeights[index];
+                coms->sendLightControl(index +3, lightValue);
             }
         }
-//        }
 
         lastLightUpdateTime = currentTime;
         lightsUpdated =true;
-//    }
-//    else{
-//        lightsUpdated =false;
-//    }
 }
 
 void FeatureControl::updateDurationLight(){
@@ -595,8 +586,6 @@ void FeatureControl::draw(){
     oss << "Idle min vid" <<endl;
     oss << "Videos found" <<endl;
     oss << "Vid. max ind." <<endl;
-
-
     ofTranslate(100, 0);
     ofDrawBitmapString(oss.str(), 0,0);
 
@@ -656,4 +645,20 @@ void FeatureControl::draw(){
     ofDrawBitmapString(oss.str(), 0,0);
 
     ofPopMatrix();
+}
+
+bool FeatureControl::weightChanged(int index){
+    if (lastFeatureWeights[index]!= featureWeights[index]){
+        return true;
+    }
+    return false;
+}
+
+bool FeatureControl::weightsChanged(){
+    for (int i=0; i <featureWeights.size();i++){
+        if (lastFeatureWeights[i]!= featureWeights[i]){
+            return true;
+        }
+    }
+    return false;
 }
