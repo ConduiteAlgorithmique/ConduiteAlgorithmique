@@ -17,6 +17,27 @@ void ColorCircle::setActive(bool v){
     CircleFeatureGuiElement::setActive(v);
 }
 
+void ColorCircle::drawTriangle(){
+    ofPushMatrix();
+    ofPushStyle();
+    translateToCenter();
+    //Draw control triangle
+    if (active && triangle){
+        ofPushMatrix();
+        ofFill();
+        int target_rot = this->targetValue*(rotationRange);
+        ofRotateDeg(rotationMin +target_rot);
+        ofTranslate(0, circleOuterRadius+4);
+        ofVec2f t1(0,0);
+        ofVec2f t2(5,10);
+        ofVec2f t3(-5,10);
+        ofDrawTriangle(t1, t2,t3);
+        ofPopMatrix();
+    }
+    ofPopStyle();
+    ofPopMatrix();
+}
+
 void ColorCircle::updateFillLine(){
     ofPushStyle();
     ofSetLineWidth(fillWidth);

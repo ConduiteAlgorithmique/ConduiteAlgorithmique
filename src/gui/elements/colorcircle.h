@@ -14,6 +14,7 @@ public:
     void setValue(float);
     void updateFillLine();
     void setActive(bool);
+    void drawTriangle();
     void setColorLimits(float, float);
 
     ofColor currentColor;
