@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "videoplayer/simplesampleplayer.h"
 #include "ofxOsc.h"
 #include "gui/imagemanager.h"
 #include "gui/segnetcolourinspector.h"
@@ -57,13 +58,11 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    void audioIn(ofSoundBuffer &b);
+//    void audioIn(ofSoundBuffer &b);
 
     void logFilename();
     void receiveBuffer(ofSoundBuffer & buffer);
-    AudioWaveform * getWaveform(){
-        return &waveform;
-    }
+    void setSamplePlayer(SimpleSamplePlayer* s);
 
     //GUI elements
     ImageManager imageManager;
@@ -73,6 +72,7 @@ public:
     CommunicationManager coms;
     PointCloudRenderer pointCloudRender;
     FeatureControl* fc;
+    SimpleSamplePlayer* samplePlayer;
 
     vector<unique_ptr<CircleFeatureGuiElement>> featureGuiElements;
 

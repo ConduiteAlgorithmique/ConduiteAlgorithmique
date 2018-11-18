@@ -2,6 +2,7 @@
 #include "ofxJsonSettings.h"
 
 
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofGetWindowPtr()->setVerticalSync(true);
@@ -18,7 +19,7 @@ void ofApp::setup(){
     DEV_MODE = Settings::getBool("dev_mode");
 
     font.load("futura.ttf", 12);
-    initAudio();
+//    initAudio();
     initNames();
     //    ofSetLogLevel(OF_LOG_ERROR);
     ofSetLogLevel(OF_LOG_NOTICE);
@@ -95,6 +96,10 @@ void ofApp::setup(){
 //    FXAAshader.load("fxaa.vert","fxaa.frag");
 
     fc =new FeatureControl(&databaseLoader, &coms, &featureGuiElements, &pointCloudRender);
+}
+
+void ofApp::setSamplePlayer(SimpleSamplePlayer* s){
+    samplePlayer = s;
 }
 
 void ofApp::initNames(){
@@ -281,6 +286,10 @@ void ofApp::update(){
     pointCloudRender.setPlayingNode(playingVideo.second);
 
     //Update gui elements
+
+    if(ofGetFrameNum()%2==0 ){
+        waveform.updateSoundBuffer(samplePlayer);
+    }
     waveform.update();
     featureGuiElements[0]->update(); //Update speed timer
     featureGuiElements[1]->update(); //Update search radius
@@ -545,9 +554,9 @@ bool ofApp::vectorsAreEqual(vector<string>v1, vector<string> v2){
     return true;
 }
 
-void ofApp::audioIn(ofSoundBuffer & buffer){
-    waveform.receiveBuffer(buffer);
-}
+//void ofApp::audioIn(ofSoundBuffer & buffer){
+//    waveform.receiveBuffer(buffer);
+//}
 
 void ofApp::receiveBuffer(ofSoundBuffer & buffer){
     waveform.receiveBuffer(buffer);

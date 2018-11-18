@@ -326,3 +326,6 @@ void HapPlayerManager::loadAllVideos(ofDirectory dir, int num_videos){
        toPlayVideoIndexes.push_back(i);
    }
 }
+SimpleSamplePlayer * HapPlayerManager::getSamplePlayer(){
+    return &samplePlayer;
+}

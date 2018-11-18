@@ -1,5 +1,4 @@
 #include "ofVideoApp.h"
-#include "ofxJsonSettings.h"
 
 bool ofVideoApp::FOCUSED = true;
 
@@ -75,6 +74,10 @@ void ofVideoApp::update(){
 
     mainUpdateTime = ofGetElapsedTimeMillis() -mainUpdateTime;
     //ofLogError()<<"Main update time: "<< mainUpdateTime;
+}
+
+SimpleSamplePlayer* ofVideoApp::getSamplePlayer(){
+    return videoManager->getSamplePlayer();
 }
 
 

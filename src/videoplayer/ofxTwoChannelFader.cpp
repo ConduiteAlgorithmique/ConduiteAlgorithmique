@@ -20,8 +20,10 @@ ofxTwoChannelFader::ofxTwoChannelFader(){
 }
 
 void ofxTwoChannelFader::create_fades(int buffer_size, int num_channels){
-    fadeIn.resize(buffer_size*num_channels);
-    fadeOut.resize(buffer_size*num_channels);
+    fadeIn.resize(buffer_size*num_channels, 0);
+    fadeOut.resize(buffer_size*num_channels, 0);
+    fadeInSolo.resize(buffer_size*num_channels, 1);
+
 
     int half_buffer =buffer_size/2;
     int index =0;
@@ -29,6 +31,7 @@ void ofxTwoChannelFader::create_fades(int buffer_size, int num_channels){
         for (int c = 0; c<num_channels; c++){
             fadeOut[index] = 1.0 -float(i)/half_buffer;
             fadeIn[half_buffer*num_channels +index] = float(i)/half_buffer;
+            fadeInSolo[index] =  1.0 -float(i)/half_buffer;
             index++;
         }
     }
@@ -70,8 +73,12 @@ void  ofxTwoChannelFader::fadeTo(ofxSoundPlayerObject *obj){
     same_input = false;
     for (int i =0; i<channels.size(); i++) {
         if (obj == channels[i]) {
-//            ofLogNotice("ofxSoundMixer::setInput") << " already connected" << endl;
+            // ofLogNotice("ofxSoundMixer::setInput") << " already connected" << endl;
+            // To fix popping on 2 videos need to add a check if i is the other channel and then set same_input accordingly
             same_input= true;
+            if (i ==current_channel){
+                same_same = true;
+            }
             current_channel = i;
             return;
         }
@@ -125,6 +132,22 @@ float ofxTwoChannelFader::getChannelVolume(int channelNumber){
     return 0;
 }
 
+void ofxTwoChannelFader::copyLiveAudio(ofSoundBuffer &output){
+    if (copyLock.try_lock()){
+        ofSoundBuffer tb;
+        output.getChannel(tb,0);
+        audioCopyBuffer.append(tb);
+        copyLock.unlock();
+    }
+}
+
+void ofxTwoChannelFader::getAudio(ofSoundBuffer &input){
+    if (copyLock.try_lock()){
+        audioCopyBuffer.copyTo(input, audioCopyBuffer.size(),1,0);
+        audioCopyBuffer.clear();
+        copyLock.unlock();
+    }
+}
 
 //----------------------------------------------------
 // this pulls the audio through from earlier links in the chain and sums up the total output
@@ -154,26 +177,51 @@ void ofxTwoChannelFader::audioOut(ofSoundBuffer &output) {
         //Case 2 : have to do a crossfade on the same audio source
         if (same_input)
         {
-            channels[current_channel]->play();
+            if (same_same){
+                channels[current_channel]->play();
 
-            ofSoundBuffer tempBuffer;
-            tempBuffer.resize(output.size());
-            tempBuffer.setNumChannels(output.getNumChannels());
-            tempBuffer.setSampleRate(output.getSampleRate());
-            dynamic_cast<ofxSoundObject*>(channels[current_channel])->audioOut(tempBuffer);
+                ofSoundBuffer tempBuffer;
+                tempBuffer.resize(output.size());
+                tempBuffer.setNumChannels(output.getNumChannels());
+                tempBuffer.setSampleRate(output.getSampleRate());
+                dynamic_cast<ofxSoundObject*>(channels[current_channel])->audioOut(tempBuffer);
 
-            //combine the channels with fade-in_fadeout boyos
-            for (int j = 0; j < tempBuffer.size(); j++) {
-                output.getBuffer()[j] += tempBuffer.getBuffer()[j] * fadeIn[j] +currentBuffer.getBuffer()[j]*fadeOut[j];
+                //combine the channels with fade-in_fadeout boyos
+                for (int j = 0; j < tempBuffer.size(); j++) {
+                    output.getBuffer()[j] += tempBuffer.getBuffer()[j] * fadeIn[j] +currentBuffer.getBuffer()[j]*fadeOut[j];
+    //                output.getBuffer()[j] +=  fadeIn[j] +fadeOut[j];
+
+                }
+                same_same = false;
             }
+            else{
+                channels[current_channel]->play();
+
+                ofSoundBuffer tempBuffer;
+                tempBuffer.resize(output.size());
+                tempBuffer.setNumChannels(output.getNumChannels());
+                tempBuffer.setSampleRate(output.getSampleRate());
+                dynamic_cast<ofxSoundObject*>(channels[current_channel])->audioOut(tempBuffer);
+
+                //combine the channels with fade-in_fadeout boyos
+                for (int j = 0; j < tempBuffer.size(); j++) {
+                    output.getBuffer()[j] += tempBuffer.getBuffer()[j] * fadeIn[j] +currentBuffer.getBuffer()[j]*fadeOut[j];
+    //                output.getBuffer()[j] +=  fadeIn[j] +fadeOut[j];
+
+                }
+
+            }
+
             same_input = false;
         }
+
         //Case 3 : no last channel
         else if (channels[last_channel] == NULL){
             for (int j = 0; j < currentBuffer.size(); j++) {
                 output.getBuffer()[j] += currentBuffer.getBuffer()[j]*fadeIn[j];
             }
         }
+
         //Case 4 : Both channels present
         else{
             ofSoundBuffer tempBuffer;
@@ -188,6 +236,8 @@ void ofxTwoChannelFader::audioOut(ofSoundBuffer &output) {
             channels[last_channel]->stop();
         }
     }
+    copyLiveAudio(output);
+
 }
 
 //----------------------------------------------------

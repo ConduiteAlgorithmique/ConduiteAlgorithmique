@@ -16,7 +16,7 @@ public:
         image.allocate(height, width, OF_IMAGE_GRAYSCALE);
         image.setColor(ofColor::black);
         int n = (int) image.getHeight();
-        int maxBin = fft->getBinFromFrequency(5000);
+        int maxBin = fft->getBinFromFrequency(8000);
         int spectrogramWidth = (int) image.getWidth();
 
         float binstep = maxBin/float(n);

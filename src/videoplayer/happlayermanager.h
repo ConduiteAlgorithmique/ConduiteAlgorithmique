@@ -40,13 +40,13 @@ public:
     float getHeight() {return players[playingVideoIndex].video.isLoaded() ? players[playingVideoIndex].video.getHeight() : 0;}
     void toggleOverlay();
     void playNow(string toPlay);
+    SimpleSamplePlayer * getSamplePlayer();
+
 
     int playingVideoIndex;
     int lastVideoIndex;
 
-    SimpleSamplePlayer * getSamplePlayer(){
-        return &samplePlayer;
-    }
+
 
 private:
     /* Fades */

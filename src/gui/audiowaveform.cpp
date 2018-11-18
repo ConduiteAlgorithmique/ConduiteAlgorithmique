@@ -15,11 +15,14 @@ AudioWaveform::AudioWaveform()
         drawBuffer.push_back(0.f);
     }
 
+
+
     fft = ofxFft::create(INTERNAL_BUFFER_LENGTH, OF_FFT_WINDOW_HAMMING);
     audioBins.resize(fft->getBinSize());
     spectrogram.initialize(fft,2*ofGetWidth()/3, ofGetHeight()/3 );
     runningMax =1.;
-
+    liveBuffer.setSampleRate(48000);
+    liveBuffer.setNumChannels(1);
 
 }
 
@@ -27,22 +30,45 @@ void AudioWaveform::receiveBuffer(ofSoundBuffer& buffer){
 
     int lastChunkStart = INTERNAL_BUFFER_LENGTH -IN_AUDIO_BUFFER_LENGTH ;
     std::lock_guard<std::mutex> lock(bufferMutex);
-    buffer.getChannel(rightBuffer,1 );
-    //leftBuffer.addTo(rightBuffer);
+    buffer.getChannel(liveBuffer,1 );
     std::copy(soundBuffer.begin()+IN_AUDIO_BUFFER_LENGTH, soundBuffer.end(), soundBuffer.begin());
-    std::copy(std::begin(rightBuffer.getBuffer()),std::end(rightBuffer.getBuffer()), std::begin(soundBuffer)+lastChunkStart);
+    std::copy(std::begin(liveBuffer.getBuffer()),std::end(liveBuffer.getBuffer()), std::begin(soundBuffer)+lastChunkStart);
 }
 
 
+void AudioWaveform::updateSoundBuffer(SimpleSamplePlayer* s){
+    s->getLiveAudio(liveBuffer);
+    int lastChunkStart = INTERNAL_BUFFER_LENGTH -IN_AUDIO_BUFFER_LENGTH ;
+//    std::copy(soundBuffer.begin()+IN_AUDIO_BUFFER_LENGTH, soundBuffer.end(), soundBuffer.begin());
+//    ofLogNotice("Live buffer size") << liveBuffer.size() <<endl;
+    int inBufferSize= liveBuffer.size();
+    if (inBufferSize >0){
+        if (inBufferSize>= INTERNAL_BUFFER_LENGTH){
+            std::copy(std::end(liveBuffer.getBuffer()) -INTERNAL_BUFFER_LENGTH,std::end(liveBuffer.getBuffer()), std::begin(soundBuffer));
+        }
+        else{
+            int lastChunkStart = INTERNAL_BUFFER_LENGTH -inBufferSize ;
+
+            std::copy( soundBuffer.begin() +lastChunkStart, soundBuffer.end(), soundBuffer.begin());
+            std::copy(std::begin(liveBuffer.getBuffer()),std::end(liveBuffer.getBuffer()), std::begin(soundBuffer)+lastChunkStart);
+        }
+    }
+
+}
+
 void AudioWaveform::copyBuffer(){
     std::lock_guard<std::mutex> lock(bufferMutex);
-    drawBuffer = soundBuffer;
+    drawBuffer=soundBuffer;
+
+
+//    drawBuffer =soundBuffer;
+//    std::copy(std::begin(liveBuffer.getBuffer()),std::end(liveBuffer.getBuffer()), std::begin(drawBuffer));
 }
 
 void AudioWaveform::copyLeftRightBuffer(){
     std::lock_guard<std::mutex> lock(bufferMutex);
     leftDrawBuffer = leftBuffer.getBuffer();
-    rightDrawBuffer = rightBuffer.getBuffer();
+    rightDrawBuffer = liveBuffer.getBuffer();
 }
 
 void AudioWaveform::draw2D(){
@@ -122,20 +148,20 @@ void AudioWaveform::draw(){
 
 void AudioWaveform::update(){
     copyBuffer();
-    float bufferMax = 0;
-    for (auto v: drawBuffer){
-        bufferMax = max(v, bufferMax);
-    }
+//    float bufferMax = 0;
+//    for (auto v: drawBuffer){
+//        bufferMax = max(v, bufferMax);
+//    }
 
-    runningBufferMax = runningBufferMax*0.99 + bufferMax*0.01;
-    if (bufferMax >runningBufferMax){
-        runningBufferMax = bufferMax;
-    }
-    runningBufferMax = max(runningBufferMax, 0.05f);
+//    runningBufferMax = runningBufferMax*0.99 + bufferMax*0.01;
+//    if (bufferMax >runningBufferMax){
+//        runningBufferMax = bufferMax;
+//    }
+//    runningBufferMax = max(runningBufferMax, 0.05f);
 
-    for (int  i= 0; i< drawBuffer.size(); i++){
-        drawBuffer[i]/=(runningBufferMax*2);
-    }
+//    for (int  i= 0; i< drawBuffer.size(); i++){
+//        drawBuffer[i]/=(runningBufferMax*2);
+//    }
 
     fft->setSignal(&drawBuffer[0]);
 

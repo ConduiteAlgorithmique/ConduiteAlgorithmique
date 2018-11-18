@@ -2,9 +2,9 @@
 
 #include "ofMain.h"
 #include "ofxOsc.h"
+#include "ofxJsonSettings.h"
 #include "videoplayer/happlayermanager.h"
 #include "videoplayer/videodatabaseloader.h"
-#include "ofApp.h"
 
 class ofVideoApp : public ofBaseApp{
 
@@ -25,13 +25,13 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     static void window_focus_callback(GLFWwindow* window, int focused);
+    SimpleSamplePlayer* getSamplePlayer();
 
 private:
     ofxOscReceiver receiver;
     ofxOscSender sender;
     HapPlayerManager* videoManager;
     VideoDatabaseLoader dbl;
-    ofApp *guiApp;
     ofFbo fbo;
 
     std::string		msg_strings[20];

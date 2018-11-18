@@ -13,6 +13,7 @@ public:
     SimpleSamplePlayer();
     ptrdiff_t  getSampleIndexFromName(string name);
     void playFromIndex(int i);
+    void getLiveAudio(ofSoundBuffer& input);
 
     void playFile(string sample_name, int start_frame);
     void init (vector<string> paths, int num_files);

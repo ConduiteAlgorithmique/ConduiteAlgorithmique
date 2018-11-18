@@ -5,9 +5,10 @@
 #include <mutex>
 #include "ofxFft.h"
 #include "spectrogramvisualizer.h"
-
+#include "videoplayer/simplesampleplayer.h"
 #define IN_AUDIO_BUFFER_LENGTH 1024
-#define INTERNAL_BUFFER_LENGTH IN_AUDIO_BUFFER_LENGTH*4
+#define INTERNAL_BUFFER_LENGTH 1024*4
+
 class AudioWaveform
 {
 public:
@@ -20,6 +21,8 @@ public:
    void drawSpectrum(int w, int h);
    void drawWaveform(int w, int h);
    void shiftSpectrogram();
+   void updateSoundBuffer(SimpleSamplePlayer *s);
+
 
 private:
 
@@ -39,7 +42,7 @@ private:
    ofMutex spectroMutex;
    bool toggle;
    ofSoundBuffer leftBuffer;
-   ofSoundBuffer rightBuffer;
+   ofSoundBuffer liveBuffer;
 
    ofxFft* fft;
    vector<float> drawBins, middleBins, audioBins;

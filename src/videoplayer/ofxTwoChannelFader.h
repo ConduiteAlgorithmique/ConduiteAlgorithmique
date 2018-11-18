@@ -6,7 +6,7 @@
 #include "ofMain.h"
 #include "ofxSoundObject.h"
 #include "ofxSoundPlayerObject.h"
-#include "gui/audiowaveform.h"
+
 /**
  * This class represents a simple mixer which adds together the output
  * of multiple chains of ofxSoundObjects
@@ -35,23 +35,35 @@ public:
     ofParameter<float> masterVol;
     void  fadeTo(ofxSoundPlayerObject *obj);
     void create_fades(int buffer_size, int num_channels);
+    void getAudio(ofSoundBuffer &input);
 
 
 protected:
     void setInput(ofxSoundObject *obj);
-    void masterVolChanged(float& f);
     void disconnectInput(ofxSoundPlayerObject * input);
+    void masterVolChanged(float& f);
+    void copyLiveAudio(ofSoundBuffer &output);
+
     vector<ofxSoundPlayerObject*>channels;
     vector<float> channelVolume;
     vector<float> fadeIn;
     vector<float> fadeOut;
+    vector<float> fadeInSolo;
+
 
     float masterVolume;
     ofMutex mutex;
 
     bool fade;
     bool same_input =true;
+    bool same_same =false;
     int current_channel;
+    int buffersize;
+
+    ofSoundBuffer audioCopyBuffer;
+    ofMutex copyLock;
+
+
 
 };
 

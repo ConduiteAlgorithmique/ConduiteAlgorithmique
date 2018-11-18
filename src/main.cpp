@@ -37,9 +37,10 @@ int main( ){
     shared_ptr<ofApp> interfaceApp (new ofApp());
     ofRunApp(videoWindow, videoApp);
     ofRunApp(interfaceWindow, interfaceApp);
+    interfaceApp->setSamplePlayer(videoApp->getSamplePlayer());
+
 
 
 //    glfwSetWindowFocusCallback( std::dynamic_pointer_cast<ofAppGLFWWindow> (t)->getGLFWWindow(), videoApp->window_focus_callback );
-//    videoApp->setWaveformPointer(interfaceApp->getWaveform());
     ofRunMainLoop();
 }
