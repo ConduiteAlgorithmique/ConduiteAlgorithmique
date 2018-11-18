@@ -102,7 +102,6 @@ void FeatureControl::update(){
                 idle_active_state = IDLE_ACTIVE_STABLE;
                 setSpeed(0);
             }
-
         }
         else if ( idle_active_state == IDLE_ACTIVE_STABLE){
             float vidlen = dbl->getVideoLength(playingVideo.second)-1;
@@ -142,7 +141,6 @@ void FeatureControl::updateState(){
     case IDLE_ACTIVE:
         if (input_activity_flag){
             activityType = ActivityType::NONE;
-//            getNewVideos();
             toHumanActive();
             break;
         }
@@ -276,7 +274,6 @@ void FeatureControl::getNewVideos(bool play){
     }
 
     (*fge)[1]->setValue(videoMaxIndex);
-    updateDurationLight();
 
     videos = dbl->getVideoPairsFromIndexes(videoIndexes);
 
@@ -405,13 +402,13 @@ void FeatureControl::toggleFeatureTarget(int index){
 }
 
 void FeatureControl::updateActiveFeature(int index, int timeoutOffset, bool trigger){
+    //Set light to max
+    if(featureWeights[index]<1.){
+        coms->sendLightControl(index+3, 4096);
+    }
     featureActive[index]=true;
     featureWeights[index]=1.0;
     inactiveCounter[index] = 0;
-
-    //Set light to max
-    coms->sendLightControl(index+3, 4096);
-
 
     if (trigger){
         getNewVideos();
@@ -513,7 +510,6 @@ void FeatureControl::blinkOn(){
     coms->sendLightControl(1, 4095);
     blink = true;
     blinkTimer= currentTime;
-
 }
 
 void FeatureControl::blinkOff(){
