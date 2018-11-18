@@ -21,10 +21,14 @@ public:
     float getDistance(const VideoItem);
     vector<int> getSearchResultsDistance(int, bool, int & );
     void getKNN(vector<float> , vector<float>,  vector<float> &);
+    float getColorDistance(int);
+    float getColorDistance2(int);
+
+
     vector<float> searchDistances;
     vector<VideoItem> videos;
     vector<int> nearest_videos;
-
+    int COLOR_FEATURE_INDEX = 9;
     int numSearchPoints = 64;
     float threshold_distance = 0.05;
     std::default_random_engine rng;

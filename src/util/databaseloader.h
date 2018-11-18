@@ -30,6 +30,7 @@ public:
     vector<float> getFeaturesFromindex(int index);
     int getVideoIndexFromName(string name);
     float getVideoLength(int index);
+    void getSaturationBrightness(int index, float &, float &);
     vector<pair<string, int>> getVideoPairsFromIndexes(vector<int> indexes);
 
     vector<string> feature_names;

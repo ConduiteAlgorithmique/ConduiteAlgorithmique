@@ -186,3 +186,12 @@ vector<ofVec2f> DatabaseLoader::getCoordinates(){
 float DatabaseLoader::getVideoLength(int index){
     return this->video_durations[index];
 }
+
+
+void  DatabaseLoader::getSaturationBrightness(int index, float &s, float &b){
+    float h;
+    colors[index].getHsb(h,s,b);
+    s = s/255.;
+    b = b/255.;
+    return;
+}
