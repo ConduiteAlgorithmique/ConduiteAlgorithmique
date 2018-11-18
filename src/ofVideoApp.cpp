@@ -5,7 +5,7 @@ bool ofVideoApp::FOCUSED = true;
 //--------------------------------------------------------------
 void ofVideoApp::setup(){
     ofSetVerticalSync(true);
-    ofSetFrameRate(60);
+//    ofSetFrameRate(60);
     ofSetBackgroundAuto(false);
     std::cout << "listening for osc messages on port " << Settings::getString("PLAYING_INFO_PORT") << "\n";
     std::cout << "sending osc messages on port " << Settings::getString("VIDEO_CONTROL_PORT") << "\n";

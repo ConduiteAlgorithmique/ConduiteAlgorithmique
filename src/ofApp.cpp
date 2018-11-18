@@ -7,7 +7,7 @@
 void ofApp::setup(){
     ofGetWindowPtr()->setVerticalSync(true);
     ofSetVerticalSync(true);
-    ofSetFrameRate(60);
+//    ofSetFrameRate(60);
 
     ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
     ofEnableSmoothing();
@@ -327,6 +327,7 @@ void ofApp::draw(){
 //        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     imageManager.draw();
     drawControlsText();
+
     if (DEV_MODE){
         std::stringstream strm;
         strm << "fps: " << ofGetFrameRate();
@@ -581,7 +582,7 @@ void ofApp::keyPressed(int key){
         fc->toIdleActive();
     }
     if (key ==' '){
-        logFilename();
+//        logFilename();
     }
 }
 //--------------------------------------------------------------
