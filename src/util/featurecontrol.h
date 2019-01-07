@@ -75,8 +75,8 @@ public:
     };
 
     int secondsToFrames = 60.;
-    vector<int> idleFeatureIndexes;
-    vector<int> idleActiveFeatureIndexes;
+    vector<vector<int>> idleFeatureIndexes;
+    vector<vector<int>> idleActiveFeatureIndexes;
 
     BehaviourState state;
     ActivityType activityType;
@@ -167,10 +167,10 @@ public:
 private:
 
     //Update feature functions
-    void setIdleFeature(int index);
-    void updateFeatureWeights(bool ignoreIdle);
+    void setIdleFeature(vector<int> index);
+    void updateFeatureWeights();
     void updateFeatureValues(vector<float> fv);
-    void timeoutOtherFeatures(int index);
+    void timeoutOtherFeatures(vector<int> index);
 
     //Light functions
     void updateLights();
@@ -220,7 +220,7 @@ private:
 
     //Feature indexes
     int currentActiveFeatureIndex;
-    int activeFeatureIndex;
+    vector<int> currentIdleActiveFeatureIndexes;
 
     bool input_activity_flag;
 

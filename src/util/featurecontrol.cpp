@@ -5,27 +5,70 @@ template <typename E>
 constexpr typename std::underlying_type<E>::type to_ut(E e) noexcept {
     return static_cast<typename std::underlying_type<E>::type>(e);
 }
-vector<int> readSettingsFeatures(string t){
+void readSettingsFeatures(string t, vector<vector<int>>& indexes){
     std::stringstream ss(t);
     std::istream_iterator<std::string> begin(ss);
     std::istream_iterator<std::string> end;
     std::vector<std::string> vstrings(begin, end);
-    vector<int> feature_index_vect;
 
     for(auto fname: vstrings){
 
         map<string, int>::const_iterator it = featureIndexMap.find(fname);
         if(it != featureIndexMap.end())
         {
-            feature_index_vect.push_back(it->second);
+            vector<int> tv;
+            tv.push_back(it->second);
+            indexes.push_back(tv);
         }
         else{
             ofLogError() << "ERROR IN SETTINGS - WRONG IDLE FEATURE NAME : "<<fname<<endl;
             ofExit();
         }
     }
-    return feature_index_vect;
 }
+
+template<typename StringFunction>
+void splitString(const std::string &str, char delimiter, StringFunction f) {
+  std::size_t from = 0;
+  for (std::size_t i = 0; i < str.size(); ++i) {
+    if (str[i] == delimiter) {
+      f(str, from, i);
+      from = i + 1;
+    }
+  }
+  if (from <= str.size())
+    f(str, from, str.size());
+}
+void readSettingsFeaturePairs(string t, vector<vector<int>>& indexes){
+    std::stringstream ss(t);
+    vector<string> groups;
+    string group;
+    while(std::getline(ss, group, ',')){
+        groups.push_back(group);
+    }
+
+    for(auto group: groups){
+        std::stringstream gss(group);
+        std::istream_iterator<std::string> begin(gss);
+        std::istream_iterator<std::string> end;
+        std::vector<std::string> vstrings(begin, end);
+        vector<int> tv;
+
+        for (auto fname: vstrings){
+            map<string, int>::const_iterator it = featureIndexMap.find(fname);
+            if(it != featureIndexMap.end())
+            {
+                tv.push_back(it->second);
+            }
+            else{
+                ofLogError() << "ERROR IN SETTINGS - WRONG IDLE FEATURE NAME : "<<fname<<endl;
+                ofExit();
+            }
+        }
+        indexes.push_back(tv);
+    }
+}
+
 
 FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,vector<unique_ptr<CircleFeatureGuiElement>> *guiElements, PointCloudRenderer* pcr)
 {
@@ -46,14 +89,16 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
     idle_activity_min_duration = Settings::getFloat("idle_activity_min_duration"); //seconds
     idle_activity_max_duration = Settings::getFloat("idle_activity_max_duration"); //seconds
 
-
-
     auto t = Settings::getString("idle_features");
-    idleFeatureIndexes = readSettingsFeatures(t);
+    readSettingsFeatures(t, idleFeatureIndexes);
     t = Settings::getString("idle_active_features");
-    idleActiveFeatureIndexes = readSettingsFeatures(t);
+    readSettingsFeatures(t, idleActiveFeatureIndexes);
 
+    t = Settings::getString("idle_feature_pairs");
+    readSettingsFeaturePairs(t, idleFeatureIndexes);
 
+    t = Settings::getString("idle_active_feature_pairs");
+    readSettingsFeaturePairs(t, idleActiveFeatureIndexes);
 
     state = IDLE;
     int num_features =21;
@@ -77,7 +122,6 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
     videoMaxIndex = 1;
     activityType = ActivityType::NONE;
     activityModifier = ActivityModifier::NONE;
-    activeFeatureIndex=0;
     input_activity_flag = 0;
     blinkTimer =0;
     setSpeed(0);
@@ -107,18 +151,18 @@ void FeatureControl::update(){
     switch (state){
     case HUMAN_ACTIVE:
         //Todo
-        updateFeatureWeights(true);
+        updateFeatureWeights();
         break;
 
     case IDLE:
-        updateFeatureWeights(true);
+        updateFeatureWeights();
         if (weightsChanged()){
             getNewVideos(false);
         }
         break;
 
     case IDLE_ACTIVE:
-        updateFeatureWeights(true);
+        updateFeatureWeights();
         float idleTime = currentTime -idleActivatedTime;
         if (idle_active_state == IDLE_ACTIVE_TRANSITION){
             lastActiveCycle = currentTime;
@@ -196,10 +240,14 @@ void FeatureControl::toIdleActive(){
 
     float activityDuration = ofRandom(idle_activity_min_duration, idle_activity_max_duration);
 
-    currentActiveFeatureIndex =idleActiveFeatureIndexes[rand()%idleActiveFeatureIndexes.size()];
-    targetFeatureValues[currentActiveFeatureIndex] = 0.;
-    updateActiveFeature(currentActiveFeatureIndex, 0., false);
-    timeoutOtherFeatures(currentActiveFeatureIndex);
+    currentIdleActiveFeatureIndexes =idleActiveFeatureIndexes[rand()%idleActiveFeatureIndexes.size()];
+
+    for(auto idx: currentIdleActiveFeatureIndexes){
+        targetFeatureValues[idx] = 0.;
+        updateActiveFeature(idx, 0., false);
+    }
+    timeoutOtherFeatures(currentIdleActiveFeatureIndexes);
+
 
     idleActivityValues.clear();
     idleActivityTimings.clear();
@@ -254,16 +302,20 @@ void FeatureControl::toIdleActive(){
     vector<float> tempSearchvalues = targetFeatureValues;
     vector<float> tempFeatureWeights;
     tempFeatureWeights.resize(tempSearchvalues.size(), 0);
-    tempFeatureWeights[currentActiveFeatureIndex ]=1.;
+    for(auto idx: currentIdleActiveFeatureIndexes){
+        tempFeatureWeights[idx]=1.;
+    }
 
     for (auto value: idleActivityValues){
-        tempSearchvalues[currentActiveFeatureIndex] = value;
+        for(auto idx: currentIdleActiveFeatureIndexes){
+            tempSearchvalues[idx] = value;
+        }
         fSearch->getKNN(tempSearchvalues, tempFeatureWeights, searchDistances);
         vector<int> results =fSearch->getSearchResultsDistance(32,true, numVideosInRange);
         int index = results[0];
         int i =0;
         bool already_in_list =std::find(videoIndexes.begin(), videoIndexes.end(), index) != videoIndexes.end();
-        while (already_in_list){
+        while (already_in_list && i<results.size()){
             i++;
             index= results[i];
             already_in_list=std::find(videoIndexes.begin(), videoIndexes.end(), index) != videoIndexes.end();
@@ -284,10 +336,13 @@ void FeatureControl::toHumanActive(){
     lastActivityTime = ofGetElapsedTimef();
 }
 
-void FeatureControl::setIdleFeature(int index){
-    currentActiveFeatureIndex = index;
-    targetFeatureValues[currentActiveFeatureIndex] = 0.;
-    updateActiveFeature(currentActiveFeatureIndex, 1., true);
+void FeatureControl::setIdleFeature(vector<int> indexes){
+    currentIdleActiveFeatureIndexes = indexes;
+    for(auto idx: currentIdleActiveFeatureIndexes){
+        targetFeatureValues[idx] = 0.;
+        updateActiveFeature(idx, 1., false);
+    }
+    getNewVideos();
 }
 
 void FeatureControl::getNewVideos(bool play){
@@ -299,7 +354,6 @@ void FeatureControl::getNewVideos(bool play){
     videoIndexes = fSearch->getSearchResultsDistance(32,true, numVideosInRange);
 
     if (state ==IDLE || state ==IDLE_ACTIVE){
-
         videoMaxIndex = CLAMP(videoIndexes.size(), 1, 32);
     }
 
@@ -340,7 +394,9 @@ void FeatureControl::cycleVideo(){
     playingVideo = videos[videoCycleIndex];
     playedIdleVideos ++;
     if (state ==IDLE_ACTIVE){
-        targetFeatureValues[currentActiveFeatureIndex]= idleActivityValues[videoCycleIndex];
+        for(auto idx: currentIdleActiveFeatureIndexes){
+            targetFeatureValues[idx] = idleActivityValues[videoCycleIndex];
+        }
     }
     if (shouldSlowdown()){
         incrementSpeed(-1);
@@ -354,9 +410,15 @@ void FeatureControl::playRandomVideo(){
     playVideo();
 }
 
-void FeatureControl::updateFeatureWeights(bool ignoreActive){
+void FeatureControl::updateFeatureWeights(){
     for (int i = 0; i <featureWeights.size(); i++){
-        if (ignoreActive){
+        //Ignore all active boyos in idle states
+        if (state==IDLE_ACTIVE ||state ==IDLE){
+            vector<int> v = currentIdleActiveFeatureIndexes;
+            if (std::find(v.begin(), v.end(), i) != v.end()) continue;
+        }
+        //only ignore currentActiveFeatureIndex when human control
+        else{
             if (i ==currentActiveFeatureIndex){
                 continue;
             }
@@ -445,12 +507,12 @@ void FeatureControl::updateActiveFeature(int index, int timeoutOffset, bool trig
     }
 }
 
-void FeatureControl::timeoutOtherFeatures(int index){
+void FeatureControl::timeoutOtherFeatures(vector<int> indexes){
     //Timeout the other features
     for(int i=0; i<this->inactiveCounter.size(); i++){
-        if (i ==index )continue;
+        if (std::find(indexes.begin(), indexes.end(), i) != indexes.end()) continue;
         //Set other active feautres to timeout limit - offset
-        else if (featureActive[index]){
+        else if (featureActive[i]){
             inactiveCounter[i] = featureTimeout*secondsToFrames ;
         }
     }
@@ -619,8 +681,11 @@ void FeatureControl::draw(){
     oss << "Tnfo" <<endl;
     oss << idleTimeCounter <<endl;
     oss << lastActivityTime<<endl;
-    oss << activeFeatureIndex <<endl;
     oss << currentActiveFeatureIndex <<endl;
+    for (auto afi:currentIdleActiveFeatureIndexes){
+        oss << afi << " ";
+    }
+    oss <<endl;
     oss << playingVideo.first <<endl;
     oss << playingVideo.second <<endl;
     oss << currentTime -videoStartTime <<endl;
