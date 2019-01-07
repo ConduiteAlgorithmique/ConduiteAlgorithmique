@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxFft.h"
 #include "ofxJsonSettings.h"
+#include "ofxColorMap.h"
 
 class SpectrogramVisualizer{
 public:
@@ -12,8 +13,12 @@ public:
     void initialize(ofxFft* fft, int width, int height){
         Settings::get().load("settings.json");
         bool expIndex = Settings::getFloat("log_spectral_axis");
+        string cmapStr = Settings::getString("colormap");
+        cmap.setMapFromName(cmapStr);
+
 
         image.allocate(height, width, OF_IMAGE_GRAYSCALE);
+        colorImage.allocate(height, width, OF_IMAGE_COLOR);
         image.setColor(ofColor::black);
         int n = (int) image.getHeight();
         int maxBin = fft->getBinFromFrequency(8000);
@@ -41,7 +46,7 @@ public:
         ofTranslate(0,height);
         ofRotateDeg(-90);
 //        ofDrawRectangle(xPos, yPos, height, width);
-        image.draw(xPos, yPos, height, width);
+        colorImage.draw(xPos, yPos, height, width);
         ofPopStyle();
         ofPopMatrix();
 
@@ -54,13 +59,25 @@ public:
         for(int i = 0; i < n; i++) {
             image.setColor(js[i] , (unsigned char) (255. * audioBins[binIndexes[i]]));
         }
+        //Test gradient
+//        ofPixels& p = image.getPixels();
+//         for(size_t x = 0; x < image.getWidth(); x++) {
+//             for(size_t y = 0; y < image.getHeight(); y++) {
+//                 int value = 255*(float)x/image.getWidth();
+//                 p[(int)(x+y*image.getWidth())] = value;
+//             }
+//         }
         image.update();
+        cmap.apply(image,colorImage);
     }
 
 private:
     ofImage image;
+    ofImage colorImage;
+
     vector<int> js;
     vector<int> binIndexes;
+    ofxColorMap cmap;
 
 
     void shift(){
