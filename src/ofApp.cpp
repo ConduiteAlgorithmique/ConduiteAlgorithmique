@@ -581,6 +581,9 @@ void ofApp::keyPressed(int key){
     if (key =='a'){
         fc->toIdleActive();
     }
+    if (key =='i'){
+        fc->toIdle();
+    }
     if (key ==' '){
 //        logFilename();
     }

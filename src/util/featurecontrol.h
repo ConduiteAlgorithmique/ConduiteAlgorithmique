@@ -8,24 +8,31 @@
 #include "gui/elements/uielements.h"
 #include "gui/pointcloudrenderer.h"
 
-/*    IdleFeatures{
-        AMPLITUDE = 0,
-        SPEED =4,
-        STABILITY = 5,
-        RPM = 6,
-    };
-    IdleActiveFeatures{
-        AMPLITUDE = 0,
-        Spectral Centroid =1,
-        Vehicle speed = 4,
-        RPM =6,
-        TEMPERATURE =7,
 
-        LIGHTNESS = 11,
-        UNCERTAINTY = 12,
-        VEGETATION = 17
-    }
-*/
+const std::map<string, int> featureIndexMap{
+    {"loudness", 0},
+    {"pitch", 1},
+    {"percussiveness", 2},
+    {"spec_band", 3},
+    {"speed", 4},
+    {"instability", 5},
+    {"rpm", 6},
+    {"temperature", 7},
+    {"roll", 8},
+    {"hue", 9},
+    {"lightness", 10},
+    {"uncertainty", 11},
+    {"building", 12},
+    {"pavement", 13},
+    {"road", 14},
+    {"sky", 15},
+    {"trees", 16},
+    {"vehicle", 17},
+    {"signage", 18},
+    {"fence_pole", 19},
+    {"bike_ped", 20},
+};
+
 const int IDLE_ACTIVE_TRANSITION = 0;
 const int IDLE_ACTIVE_STABLE =  1;
 const int COLOR_FEATURE_INDEX = 9;
@@ -68,10 +75,8 @@ public:
     };
 
     int secondsToFrames = 60.;
-    int numIdleFeatures= 4;
-    int idleFeatureIndexes[4] = {0,4,5,6};
-    int numIdleActiveFeatures= 8;
-    int idleActiveFeatureIndexes[8] = {0,1,4,6,7,10,11,16};
+    vector<int> idleFeatureIndexes;
+    vector<int> idleActiveFeatureIndexes;
 
     BehaviourState state;
     ActivityType activityType;

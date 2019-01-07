@@ -5,6 +5,27 @@ template <typename E>
 constexpr typename std::underlying_type<E>::type to_ut(E e) noexcept {
     return static_cast<typename std::underlying_type<E>::type>(e);
 }
+vector<int> readSettingsFeatures(string t){
+    std::stringstream ss(t);
+    std::istream_iterator<std::string> begin(ss);
+    std::istream_iterator<std::string> end;
+    std::vector<std::string> vstrings(begin, end);
+    vector<int> feature_index_vect;
+
+    for(auto fname: vstrings){
+
+        map<string, int>::const_iterator it = featureIndexMap.find(fname);
+        if(it != featureIndexMap.end())
+        {
+            feature_index_vect.push_back(it->second);
+        }
+        else{
+            ofLogError() << "ERROR IN SETTINGS - WRONG IDLE FEATURE NAME : "<<fname<<endl;
+            ofExit();
+        }
+    }
+    return feature_index_vect;
+}
 
 FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,vector<unique_ptr<CircleFeatureGuiElement>> *guiElements, PointCloudRenderer* pcr)
 {
@@ -24,6 +45,15 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
 
     idle_activity_min_duration = Settings::getFloat("idle_activity_min_duration"); //seconds
     idle_activity_max_duration = Settings::getFloat("idle_activity_max_duration"); //seconds
+
+
+
+    auto t = Settings::getString("idle_features");
+    idleFeatureIndexes = readSettingsFeatures(t);
+    t = Settings::getString("idle_active_features");
+    idleActiveFeatureIndexes = readSettingsFeatures(t);
+
+
 
     state = IDLE;
     int num_features =21;
@@ -153,7 +183,7 @@ void FeatureControl::toIdle(){
     playedIdleVideos =0;
     lastActivityTime = ofGetElapsedTimef();
     slowdownTime = ofGetElapsedTimef();
-    setIdleFeature(idleFeatureIndexes[rand()%numIdleFeatures]);
+    setIdleFeature(idleFeatureIndexes[rand()%idleFeatureIndexes.size()]);
     state= IDLE;
 }
 
@@ -166,14 +196,14 @@ void FeatureControl::toIdleActive(){
 
     float activityDuration = ofRandom(idle_activity_min_duration, idle_activity_max_duration);
 
-    currentActiveFeatureIndex =idleActiveFeatureIndexes[rand()%numIdleActiveFeatures];
+    currentActiveFeatureIndex =idleActiveFeatureIndexes[rand()%idleActiveFeatureIndexes.size()];
     targetFeatureValues[currentActiveFeatureIndex] = 0.;
     updateActiveFeature(currentActiveFeatureIndex, 0., false);
     timeoutOtherFeatures(currentActiveFeatureIndex);
 
     idleActivityValues.clear();
     idleActivityTimings.clear();
-    int num_steps =idleActivityNumUpdates*activityDuration/2;
+    int num_steps =idleActivityNumUpdates*activityDuration;
 
     if (activityType == ActivityType::UP_DOWN){
         num_steps = num_steps;
