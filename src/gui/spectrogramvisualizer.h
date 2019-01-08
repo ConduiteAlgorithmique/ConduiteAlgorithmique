@@ -16,7 +16,6 @@ public:
         string cmapStr = Settings::getString("colormap");
         cmap.setMapFromName(cmapStr);
 
-
         image.allocate(height, width, OF_IMAGE_GRAYSCALE);
         colorImage.allocate(height, width, OF_IMAGE_COLOR);
         image.setColor(ofColor::black);
@@ -39,17 +38,15 @@ public:
         }
     }
 
-
     void draw(int xPos, int yPos, int width, int height){
         ofPushMatrix();
         ofPushStyle();
-        ofTranslate(0,height);
+        ofTranslate(xPos,height+yPos);
         ofRotateDeg(-90);
 //        ofDrawRectangle(xPos, yPos, height, width);
-        colorImage.draw(xPos, yPos, height, width);
+        colorImage.draw(0, 0, height, width);
         ofPopStyle();
         ofPopMatrix();
-
     }
 
     void update(vector<float> audioBins){
