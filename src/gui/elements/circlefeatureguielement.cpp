@@ -197,7 +197,7 @@ void CircleFeatureGuiElement::setActive(bool v){
         this->fillColor = 255;
     }
     else{
-        this->fillColor = 255*0.7;
+        this->fillColor = 255*0.5;
     }
     updateFillLine();
 }
