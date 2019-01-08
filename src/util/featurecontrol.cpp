@@ -27,18 +27,6 @@ void readSettingsFeatures(string t, vector<vector<int>>& indexes){
     }
 }
 
-template<typename StringFunction>
-void splitString(const std::string &str, char delimiter, StringFunction f) {
-  std::size_t from = 0;
-  for (std::size_t i = 0; i < str.size(); ++i) {
-    if (str[i] == delimiter) {
-      f(str, from, i);
-      from = i + 1;
-    }
-  }
-  if (from <= str.size())
-    f(str, from, str.size());
-}
 void readSettingsFeaturePairs(string t, vector<vector<int>>& indexes){
     std::stringstream ss(t);
     vector<string> groups;
@@ -81,7 +69,7 @@ FeatureControl::FeatureControl(DatabaseLoader *dbl, CommunicationManager  *coms,
     idleTimeout =  Settings::getInt("idle_timeout"); //seconds
     idleMinVideos=  Settings::getInt("idle_videos"); //seconds
     featureTimeout = Settings::getFloat("feature_timeout");
-
+    currentActiveFeatureIndex = 0;
     featureDecayRate = 1./(60.*Settings::getFloat("feature_decay_sec"));
     idleActivityInterval = Settings::getFloat("idle_activity_min_interval"); //seconds
     idleActivityNumUpdates= Settings::getInt("idle_activity_num_updates"); //seconds
@@ -315,7 +303,7 @@ void FeatureControl::toIdleActive(){
         int index = results[0];
         int i =0;
         bool already_in_list =std::find(videoIndexes.begin(), videoIndexes.end(), index) != videoIndexes.end();
-        while (already_in_list && i<results.size()){
+        while (already_in_list && i<(results.size()-1)){
             i++;
             index= results[i];
             already_in_list=std::find(videoIndexes.begin(), videoIndexes.end(), index) != videoIndexes.end();
@@ -414,11 +402,11 @@ void FeatureControl::updateFeatureWeights(){
     for (int i = 0; i <featureWeights.size(); i++){
         //Ignore all active boyos in idle states
         if (state==IDLE_ACTIVE ||state ==IDLE){
-            vector<int> v = currentIdleActiveFeatureIndexes;
+            vector<int> v(currentIdleActiveFeatureIndexes);
             if (std::find(v.begin(), v.end(), i) != v.end()) continue;
         }
         //only ignore currentActiveFeatureIndex when human control
-        else{
+        else if (state ==HUMAN_ACTIVE){
             if (i ==currentActiveFeatureIndex){
                 continue;
             }
