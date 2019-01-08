@@ -69,7 +69,8 @@ Project{
             'ofxJSON',
             'ofxFatLines',
             'ofxHapPlayer',
-            'ofxSoundObjects'
+            'ofxSoundObjects',
+            'ofxColorMap'
         ]
 
         // additional flags for the project. the of module sets some

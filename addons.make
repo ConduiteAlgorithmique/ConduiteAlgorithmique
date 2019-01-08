@@ -6,4 +6,4 @@ ofxJSON
 ofxFatLines
 ofxHapPlayer
 ofxSoundObjects
-
+ofxColorMap
