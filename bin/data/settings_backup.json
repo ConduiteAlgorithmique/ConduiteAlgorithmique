@@ -27,43 +27,43 @@
 
     //Features that will randomly be set to zero for idle mode
     //(MUST CORRESPOND EXACTLY TO names in list of feature names)
-    "idle_features":"loudness",
+    "idle_features":"loudness speed instability rpm",
     //Pairs are separated by commas : e.g. "loudness lightness, speed building"
-    "idle_feature_pairs":"loudness lightness, loudness rpm,speed pitch, loudness building, percussiveness pitch, road spec_band, temperature spec_band, temperature pitch, spec_band lightness, pitch lightness, percussiveness, pitch percussiveness, pitch spec_band, lightness pitch, spec_band sky, lightness percussiveness, bike_ped spec_band, lightness percussiveness, loudness road",
+    "idle_feature_pairs":"loudness lightness",
 
-    //Seconds before idle behaviour kicks in (since last human input) - avant 30
+    //Seconds before idle behaviour kicks in (since last human input)
     "idle_timeout": 30,
 
     /*IDLE ACTIVITY SETTINGS*/
     //Features that will randomly be selected for activity (value sweep)
     //(MUST CORRESPOND EXACTLY TO names in list of feature names)
-    "idle_active_features": "loudness speed rpm lightness uncertainty roll hue",
+    "idle_active_features": "loudness pitch speed rpm temperature lightness uncertainty trees",
 
     //Pairs are separated by commas : e.g. "loudness lightness, speed building"
-    "idle_active_feature_pairs": "loudness pitch, speed lightness, speed rpm, instability trees, loudness spec_band, rpm vehicle, signage building, building signage, uncertainty vehicle, uncertainty sky, uncertainty percussiveness, uncertainty instability, instability sky, rpm sky, building rpm, instability signage, instability pavement, rpm percussiveness, signage fence_pole, uncertainty temperature",
+    "idle_active_feature_pairs": "loudness pitch, speed lightness, uncertainty trees",
 	
-    //Minimum number of videos before switching to idle activity - avant 3 
-    "idle_videos": 20,
-    //Minimum period at which idle activity occurs - avant 60 viser 120
-    "idle_activity_min_interval": 200,
+    //Minimum number of videos before switching to idle activity
+    "idle_videos": 3,
+    //Minimum period at which idle activity occurs
+    "idle_activity_min_interval": 60,
 
-    //Shortest possible activity duration - avant 2
+    //Shortest possible activity duration
     "idle_activity_min_duration": 2,
-    //Longest possible activity duration - avant 5
-    "idle_activity_max_duration": 6,
+    //Longest possible activity duration
+    "idle_activity_max_duration": 5,
 
-    //Number of videos per second of activity - avant 10
-    "idle_activity_num_updates": 15,
+    //Number of videos per second of activity
+    "idle_activity_num_updates": 10,
 
-    //Number of seconds before feature weight starts to decay - avant 3
-    "feature_timeout": 4,
-    //Number of seconds for feature weight to go to zero after decay starts - avant 0.5
-    "feature_decay_sec": 0.75,
+    //Number of seconds before feature weight starts to decay
+    "feature_timeout": 3,
+    //Number of seconds for feature weight to go to zero after decay starts
+    "feature_decay_sec": 0.5,
 
     //Spectrogram settings
     //For other colormaps : https://matplotlib.org/examples/color/colormaps_reference.html
     //For greyscale use "grey"
-    "colormap": "viridis",
+    "colormap": "inferno",
     "log_spectral_axis":false,
 
     "inactive_knob_grey_level": 120,

@@ -297,6 +297,9 @@ void FeatureControl::toIdleActive(){
     for (auto value: idleActivityValues){
         for(auto idx: currentIdleActiveFeatureIndexes){
             tempSearchvalues[idx] = value;
+            if (idx == ROLL_FEATURE_INDEX){
+                tempSearchvalues[idx] = value-0.5;
+            }
         }
         fSearch->getKNN(tempSearchvalues, tempFeatureWeights, searchDistances);
         vector<int> results =fSearch->getSearchResultsDistance(32,true, numVideosInRange);
@@ -384,6 +387,9 @@ void FeatureControl::cycleVideo(){
     if (state ==IDLE_ACTIVE){
         for(auto idx: currentIdleActiveFeatureIndexes){
             targetFeatureValues[idx] = idleActivityValues[videoCycleIndex];
+            if (idx == ROLL_FEATURE_INDEX){
+                targetFeatureValues[idx] =  idleActivityValues[videoCycleIndex]-0.5;
+            }
         }
     }
     if (shouldSlowdown()){
@@ -448,7 +454,7 @@ void FeatureControl::incrementFeatureTarget(int index, float step){
             targetFeatureValues[index] = 1+targetFeatureValues[index];
         }
     }
-    else if (index ==TILT_FEATURE_INDEX) {
+    else if (index ==ROLL_FEATURE_INDEX) {
         targetFeatureValues[index] = CLAMP(targetFeatureValues[index]+step, -0.5, 0.5);
     }
     else{
@@ -467,7 +473,7 @@ void FeatureControl::toggleFeatureTarget(int index){
         float target_value = modf(v +0.5, &t);
         targetFeatureValues[index] =target_value;
     }
-    else if (index ==TILT_FEATURE_INDEX){
+    else if (index ==ROLL_FEATURE_INDEX){
         float target_value = -0.5;
         if (v<.5) target_value = 0.5;
         targetFeatureValues[index] =CLAMP(target_value, -0.5, 0.5);

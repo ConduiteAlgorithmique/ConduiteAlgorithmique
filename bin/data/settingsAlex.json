@@ -1,0 +1,56 @@
+{
+    "db_path": "/home/nuc/Documents/dataStore/database.h5",
+        "frames_path":"/home/nuc/Documents/dataStore/IMAGE/frames_480",
+        "segnet_path":"/home/nuc/Documents/dataStore/IMAGE/segnet",
+        "video_path": "/home/nuc/Documents/dataStore/VIDEO/hap/",
+        "audio_path": "/home/nuc/Documents/dataStore/AUDIO/",
+
+
+
+    /*--- WINDOW SETTINGS ---------------------------------------------*/
+
+    "interface_monitor_index": 0,
+    "video_monitor_index": 1,
+    "interface_monitor_width": 1920,
+    "interface_monitor_height": 1080,
+    "video_monitor_width": 1920,
+    "video_monitor_height": 1200,
+    "audio_device_id": 7,
+    "windowed":false,
+
+
+    /*--- INTERFACE SETTINGS ----------------------------------------------------*/
+    "idle_timeout": 30, //Seconds before idle behaviour kicks in
+    "idle_videos": 3, //Minimum number of videos before switching to idle activity
+    "idle_activity_min_interval": 60, //Period at which idle activity occurs
+    "idle_activity_min_duration": 2, //Number of videos during transition
+    "idle_activity_max_duration": 5, //Number of videos during transition
+    "idle_activity_num_updates": 20, //Number of videos during transition
+
+    "log_spectral_axis":false,
+    "feature_decay_sec": 0.5,
+    "feature_timeout": 3,
+    "english":false,
+    "point_mode":0, //0 for 2D, 1 for 3D
+
+
+    "r_off": 0,
+    "b_off": 0,
+    "r_off_purp": 0,
+
+    /*--- OSC SETTINGS --------------------------------------------------------*/
+    "PYTHON_CONTROL_RECEIVE_PORT" :44444,
+    "CONTROL_RECEIVE_PORT": 9002,
+    "VIDEO_CONTROL_PORT" : 33333,
+    "PLAYING_INFO_PORT": 44445,
+
+    "CONTROLLER_IP" : "10.6.54.255",
+    "CONTROLLER_SEND_PORT": 9001,
+
+    /*--- DEV SETTINGS --------------------------------------------------------*/
+
+    "dev_mode":false,
+    "n_dev_videos":30,
+    "debug_mode":false
+
+}

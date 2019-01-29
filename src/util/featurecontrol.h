@@ -36,7 +36,7 @@ const std::map<string, int> featureIndexMap{
 const int IDLE_ACTIVE_TRANSITION = 0;
 const int IDLE_ACTIVE_STABLE =  1;
 const int COLOR_FEATURE_INDEX = 9;
-const int TILT_FEATURE_INDEX = 8;
+const int ROLL_FEATURE_INDEX = 8;
 //const int NUM_SPEEDS= 14;
 const int COLOR_ELEMENT_INDEX = 11;
 
@@ -159,6 +159,9 @@ public:
     void toIdleActive();
     void toHumanActive();
 
+    //Video controls
+    void cycleVideo();
+
     static const int NUM_SPEEDS = 16;
     const string SPEEDSTRINGS [17]= {"Max", "4", "3", "2", "1.5", "1", "2/3", "1/2","1/3","1/4","1/6", "1/8", "1/10", "1/12", "1/16", "1/24", "1/32"};
     const float SPEEDS [17]=        {-1,     4.,   3., 2., 1.5,   1., 2./3.,  0.5,  1./3., 1./4., 1./6., 1./8., 1./10., 1./12, 1./16, 1./24., 1./32.};
@@ -184,7 +187,6 @@ private:
     //Video search/playback functions
     void getNewVideos(bool play= true);
     void playVideo();
-    void cycleVideo();
 
     //Timeout parameters
     float featureTimeout;
